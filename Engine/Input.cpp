@@ -74,6 +74,8 @@ namespace Input
 		SAFE_RELEASE(pDInput);
 	}
 
+	///////////////////////‚±‚±‚©‚ç‰º‚Íƒ}ƒEƒX/////////////////////////////////
+
 	bool IsMouseButton(int buttonCode)
 	{
 		//‰Ÿ‚µ‚Ä‚é
