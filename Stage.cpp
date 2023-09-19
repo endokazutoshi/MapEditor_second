@@ -58,7 +58,6 @@ void Stage::Initialize()
 			SetBlockHeight(x, z, 0);
 		}
 	}
-
 }
 
 //更新
@@ -150,15 +149,19 @@ void Stage::Draw()
 				trans.position_.z = z;
 				Model::SetTransform(hModel_[type], trans);
 				Model::Draw(hModel_[type]);
+				
 			}
 		}
 	}
+
 }
 
 //開放
 void Stage::Release()
 {
 }
+
+
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -175,7 +178,24 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_SETCURSEL, 0, 0);
-		return TRUE;
+			return TRUE;
+
+			int selectIndex = SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+			BLOCKTYPE selectedBlockType;
+			switch (selectIndex)
+			{
+			case 0: selectedBlockType = DEFAULT; break;
+			case 1: selectedBlockType = BRICK; break;
+			case 2: selectedBlockType = GRASS; break;
+			case 3: selectedBlockType = SAND; break;
+			case 4: selectedBlockType = WATER; break;
+			default: selectedBlockType = DEFAULT; break; 
+			}
 	}
+	
 	return FALSE;
+
+
 }
+
+
