@@ -6,16 +6,21 @@ namespace {
     const int MODEL_NUM{ 5 };
     const int XSIZE{ 15 };
     const int ZSIZE{ 15 };
-    enum BLOCKTYPE
+
+    enum BLOCKTYPE  //各種画像
     {
-        DEFAULT, BRICK, GRASS, SAND, WATER
+        DEFAULT = 0,    //0 
+        BRICK,          //1
+        GRASS,          //2
+        SAND,           //3
+        WATER           //4
     };
 }
 
 //◆◆◆を管理するクラス
 class Stage : public GameObject
 {
-    int hModel_[MODEL_NUM];    //モデル番号
+    int hModel_[MODEL_NUM];    //モデル番号(配列型)
     //int table_[XSIZE][ZSIZE];
     struct
     {
