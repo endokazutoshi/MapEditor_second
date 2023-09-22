@@ -31,6 +31,8 @@ class Stage : public GameObject
     int mode_;      //0:上げる　1：下げる　2：種類を変える
     int select_;    //種類
 
+    int radioB_;    //コントロールIDのやつー
+
 
 public:
     void SetBlock(int _x, int _z, BLOCKTYPE _type);

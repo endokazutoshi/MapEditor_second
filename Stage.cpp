@@ -45,6 +45,9 @@ void Stage::Initialize()
 		"BoxSand.fbx",
 		"BoxWater.fbx"
 	};
+
+
+
 	string fname_base = "assets/";
 	//モデルデータのロード
 	for (int i = 0; i < MODEL_NUM; i++) {
@@ -63,7 +66,8 @@ void Stage::Initialize()
 //更新
 void Stage::Update()
 {
-	if (!Input::IsMouseButtonDown(0)) {
+	if (!Input::IsMouseButtonDown(0))//マウスボタンを押したら... 
+	{
 		return;
 	}
 	float w = (float)(Direct3D::scrWidth / 2.0f);
@@ -78,7 +82,6 @@ void Stage::Update()
 		 0,  0,  1, 0,
 		 w,  h,  0, 1
 	};
-
 	//ビューポート
 	XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
 	//プロジェクション変換
@@ -102,7 +105,7 @@ void Stage::Update()
 	{
 		for (int z = 0; z < 15; z++)
 		{
-			for (int y = 0; y < table_[x][z].height + 1; y++)
+			for (int y = 0; y < table_[x][z].height + 1; y++)//一ブロックは敷きたいからheight + 1にしている
 			{
 				//⑤　②から④に向かってレイをうつ（とりあえずモデル番号はhModel_[0]）
 				RayCastData data;
@@ -116,17 +119,35 @@ void Stage::Update()
 
 				Model::RayCast(hModel_[0], data);
 
-				//⑥　レイが当たったらブレークポイントで止める
+				//if文多すぎるから変えたいな...いつか...
+				//ここでレイ発射、クリックした部分だけになる
 				if (data.hit)
 				{
-					table_[x][z].height++;
-					break;
+					//ラジオボタンの選択
+					if (radioB_ == IDC_RADIO_UP)
+					{
+						table_[x][z].height++;
+						break;
+					}
+					//ラジオボタンの選択
+					else if (radioB_ == IDC_RADIO_DOWN)
+					{
+						if (table_[x][z].height >= 1)//テーブルの高さが１つより上だったら...
+							table_[x][z].height--;
+						break;
+					}
+					//ラジオボタンの選択
+				    if (radioB_ == IDC_RADIO_CHANGE)
+				    {
+					    SetBlock(x, z,(BLOCKTYPE)(select_));
+					    break;
+				     }
 				}
-
+				
 			}
-
 		}
 	}
+
 }
 
 //描画
@@ -149,6 +170,7 @@ void Stage::Draw()
 				trans.position_.z = z;
 				Model::SetTransform(hModel_[type], trans);
 				Model::Draw(hModel_[type]);
+
 				
 			}
 		}
@@ -177,22 +199,14 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"草原");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_SETCURSEL, 0, 0);
-			return TRUE;
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+		return TRUE;
+	case WM_COMMAND:
 
-			int selectIndex = SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
-			BLOCKTYPE selectedBlockType;
-			switch (selectIndex)
-			{
-			case 0: selectedBlockType = DEFAULT; break;
-			case 1: selectedBlockType = BRICK; break;
-			case 2: selectedBlockType = GRASS; break;
-			case 3: selectedBlockType = SAND; break;
-			case 4: selectedBlockType = WATER; break;
-			default: selectedBlockType = DEFAULT; break; 
-			}
+		radioB_ = LOWORD(wp);
+	    select_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+
 	}
-	
 	return FALSE;
 
 

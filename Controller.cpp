@@ -25,13 +25,13 @@ void Controller::Initialize()
 //更新
 void Controller::Update()
 {
-    //左回転
+    //左に回転
     if (Input::IsKey(DIK_LEFT))
     {
         transform_.rotate_.y -= 1.0f;
     }
 
-    //右回転
+    //右に回転
     if (Input::IsKey(DIK_RIGHT))
     {
         transform_.rotate_.y += 1.0f;
@@ -41,7 +41,7 @@ void Controller::Update()
     XMMATRIX mRotateY = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
 
 
-
+    //上に回転
     if (Input::IsKey(DIK_UP))
     {
         transform_.rotate_.x += 1.0f;
@@ -51,6 +51,7 @@ void Controller::Update()
         }
     }
 
+    //下に回転
     if (Input::IsKey(DIK_DOWN))
     {
         transform_.rotate_.x -= 1.0f;
@@ -75,10 +76,13 @@ void Controller::Update()
     //前後移動
     XMVECTOR frontMove = XMVectorSet(0, 0, 0.1f, 0);                //奥向きのXMVECTOR構造体を用意し
     frontMove = XMVector3TransformCoord(frontMove, mRotateY);        //移動ベクトル回転
+    
+    //上に移動
     if (Input::IsKey(DIK_W))
     {
         vPos += frontMove;
     }
+    //下に移動
     if (Input::IsKey(DIK_S))
     {
         vPos -= frontMove;
@@ -87,14 +91,25 @@ void Controller::Update()
     //左右移動
     XMVECTOR rightMove = XMVectorSet(0.1f, 0, 0, 0);                //右向きのXMVECTOR構造体を用意し
     rightMove = XMVector3TransformCoord(rightMove, mRotateY);        //移動ベクトル回転
-
+    //左に移動
     if (Input::IsKey(DIK_D))
     {
         vPos += rightMove;
     }
+    //右に移動
     if (Input::IsKey(DIK_A))
     {
         vPos -= rightMove;
+    }
+    //カメラを上げる(縦に)
+    if (Input::IsKey(DIK_SPACE))
+    {
+        transform_.position_.y += 1;
+    }
+    //カメラを下げる(縦に
+    if (Input::IsKey(DIK_LSHIFT))
+    {
+        transform_.position_.y += 1;
     }
 
     XMStoreFloat3(&transform_.position_, vPos);
