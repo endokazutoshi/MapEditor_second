@@ -113,9 +113,6 @@
     <ClInclude Include="Engine\SceneManager.h">
       <Filter>ヘッダーファイル\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Childoden.h">
-      <Filter>ヘッダーファイル\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\SphereCollider.h">
       <Filter>ヘッダーファイル\Engine</Filter>
     </ClInclude>
