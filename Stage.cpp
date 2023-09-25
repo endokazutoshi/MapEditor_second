@@ -119,19 +119,22 @@ void Stage::Update()
 
 				Model::RayCast(hModel_[0], data);
 
+				//if文が多いから少なくしたいな...
 				// ここでレイ発射、クリックした部分だけになる
 				if (data.hit)
 				{
-					// ブロックがヒットした場合、その座標に対して処理を行う
+					//ラジオボタンの選択
 					if (radioB_ == IDC_RADIO_UP)
 					{
 						table_[x][z].height++;
 					}
+					//ラジオボタンの選択
 					else if (radioB_ == IDC_RADIO_DOWN)
 					{
-						if (table_[x][z].height >= 1)
+						if (table_[x][z].height >= 1)//テーブルの高さが１つより上だったら...
 							table_[x][z].height--;
 					}
+					//ラジオボタンの選択
 					else if (radioB_ == IDC_RADIO_CHANGE)
 					{
 						SetBlock(x, z, (BLOCKTYPE)(select_));
