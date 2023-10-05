@@ -32,6 +32,7 @@ class Stage : public GameObject
     int select_;    //種類
 
     int radioB_;    //コントロールIDのやつー
+    int menuID_;
 
 
 public:
