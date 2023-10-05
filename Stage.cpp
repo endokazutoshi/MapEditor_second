@@ -105,7 +105,7 @@ void Stage::Update()
 	{
 		for (int z = 0; z < 15; z++)
 		{
-			for (int y = 0; y < table_[x][z].height + 1; y++)//一ブロックは敷きたいからheight + 1にしている
+			for (int y = 0; y < table_[x][z].height + 1; y++) // 一ブロックは敷きたいからheight + 1にしている
 			{
 				//⑤　②から④に向かってレイをうつ（とりあえずモデル番号はhModel_[0]）
 				RayCastData data;
@@ -119,36 +119,34 @@ void Stage::Update()
 
 				Model::RayCast(hModel_[0], data);
 
-				//if文多すぎるから変えたいな...いつか...
-				//ここでレイ発射、クリックした部分だけになる
+				//if文が多いから少なくしたいな...
+				// ここでレイ発射、クリックした部分だけになる
 				if (data.hit)
 				{
 					//ラジオボタンの選択
 					if (radioB_ == IDC_RADIO_UP)
 					{
 						table_[x][z].height++;
-						break;
 					}
 					//ラジオボタンの選択
 					else if (radioB_ == IDC_RADIO_DOWN)
 					{
 						if (table_[x][z].height >= 1)//テーブルの高さが１つより上だったら...
 							table_[x][z].height--;
-						break;
 					}
 					//ラジオボタンの選択
-				    if (radioB_ == IDC_RADIO_CHANGE)
-				    {
-					    SetBlock(x, z,(BLOCKTYPE)(select_));
-					    break;
-				     }
+					else if (radioB_ == IDC_RADIO_CHANGE)
+					{
+						SetBlock(x, z, (BLOCKTYPE)(select_));
+					}
+					return;
 				}
-				
 			}
 		}
 	}
-
 }
+
+
 
 //描画
 void Stage::Draw()

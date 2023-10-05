@@ -26,7 +26,9 @@ class Stage : public GameObject
     {
         int type;
         int height;
-    } table_[15][15];
+    } 
+    
+    table_[15][15];
 
     int mode_;      //0:上げる　1：下げる　2：種類を変える
     int select_;    //種類
