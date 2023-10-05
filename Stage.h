@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include "windows.h"
+#include <iostream>
+#include <string>
 
 namespace {
     const int MODEL_NUM{ 5 };

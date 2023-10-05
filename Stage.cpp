@@ -124,7 +124,7 @@ void Stage::Update()
 				if (data.hit)
 				{
 					//ラジオボタンの選択
-					if (radioB_ == IDC_RADIO_UP)
+					if (menuID_ == ID_MENU_SAVE)
 					{
 						table_[x][z].height++;
 					}
@@ -141,6 +141,25 @@ void Stage::Update()
 					}
 					return;
 				}
+
+
+				HANDLE hFile;        //ファイルのハンドル
+				hFile = CreateFile(
+					L"saveFile.txt",                 //ファイル名
+					GENERIC_WRITE,           //アクセスモード（書き込み用）
+					0,                      //共有（なし）
+					NULL,                   //セキュリティ属性（継承しない）
+					CREATE_ALWAYS,           //作成方法
+					FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+					NULL);                  //拡張属性（なし）
+				if (hFile == INVALID_HANDLE_VALUE)
+				{
+					std::wcout << L"ファイルオープンに失敗 " << GetLastError() << std::endl;
+					return -1;
+				}
+
+
+
 			}
 		}
 	}
