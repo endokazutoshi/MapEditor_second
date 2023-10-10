@@ -59,5 +59,8 @@ public:
 
     //開放
     void Release() override;
+
+    //セーブ
+    void Save();
     BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 };
