@@ -204,9 +204,6 @@ void Stage::Save()
 
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
-
-
-
 	HANDLE hFile;
 	hFile = CreateFile(
 		fileName,    //ファイル名
@@ -219,12 +216,7 @@ void Stage::Save()
 	);
 
 	std::string data = "";
-
-
-
 	//data.length()
-
-
 	DWORD bytes = 0;
 	WriteFile(
 		hFile,              //ファイルハンドル
