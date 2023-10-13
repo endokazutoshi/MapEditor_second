@@ -124,7 +124,7 @@ void Stage::Update()
 				if (data.hit)
 				{
 					//ラジオボタンの選択
-					if (menuID_ == ID_MENU_SAVE)
+					if (radioB_ == IDC_RADIO_UP)
 					{
 						table_[x][z].height++;
 					}
@@ -183,21 +183,20 @@ void Stage::Release()
 }
 
 
-
 void Stage::Save()
 {
-	char fileName[MAX_PATH] = "無題.map";	//ファイル名を入れる変数
+	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
 	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn;							//名前をつけて保存ダイアログの設定用構造体
-	ZeroMemory(&ofn, sizeof(ofn));				//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);		//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")		//ファイルの種類
-		TEXT("すべてのファイル(*.*)\0*.*\0\0");		//
-	ofn.lpstrFile = fileName;						//ファイル名
-	ofn.nMaxFile = MAX_PATH;						//パスの最大文字数
-	ofn.Flags = OFN_OVERWRITEPROMPT;				//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "map";						//デフォルト拡張子
+	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
 
 	//「ファイルを保存」ダイアログ
 	BOOL selFile;
@@ -205,7 +204,39 @@ void Stage::Save()
 
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
+
+
+
+	HANDLE hFile;
+	hFile = CreateFile(
+		fileName,    //ファイル名
+		GENERIC_WRITE,  //アクセスモード
+		0,
+		NULL,
+		CREATE_ALWAYS,     //作成方法
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+
+	std::string data = "";
+
+
+
+	//data.length()
+
+
+	DWORD bytes = 0;
+	WriteFile(
+		hFile,              //ファイルハンドル
+		"ABCDEF",          //保存したい文字列
+		12,                  //保存する文字数
+		&bytes,             //保存したサイズ
+		NULL
+	);
+
+	CloseHandle(hFile);
 }
+
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -222,14 +253,15 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+		return TRUE;
+
 
 		SendMessage(GetDlgItem(hDlg, ID_MENU_SAVE), BM_SETCHECK, BST_CHECKED, 0);
-		return TRUE;
+		
 	case WM_COMMAND:
 
 		radioB_ = LOWORD(wp);
 	    select_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
-		menuID_ = SendMessage(GetDlgItem(hDlg, ID_MENU_SAVE), BM_SETCHECK, BST_CHECKED, 0);
 
 	}
 	return FALSE;
