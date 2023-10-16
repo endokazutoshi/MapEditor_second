@@ -227,6 +227,31 @@ void Stage::Save()
 	);
 
 	CloseHandle(hFile);
+
+	hFile = CreateFile(
+		L"dataFile.txt",                 //ファイル名
+		GENERIC_READ,           //アクセスモード（読み込み）
+		0,                      //共有（なし）
+		NULL,                   //セキュリティ属性（継承しない）
+		OPEN_EXISTING,           //作成方法
+		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+		NULL);                  //拡張属性（なし）
+
+	//ファイルのサイズを取得
+	DWORD fileSize = GetFileSize(hFile, NULL);
+
+	//ファイルのサイズ分メモリを確保
+	char* data;
+	data = new char[fileSize];
+
+	dwBytes = 0; //読み込み位置
+
+	res = ReadFile(
+		hFile,     //ファイルハンドル
+		data,      //データを入れる変数
+		fileSize,  //読み込むサイズ
+		&dwBytes,  //読み込んだサイズ
+		NULL);     //オーバーラップド構造体（今回は使わない）
 }
 
 
