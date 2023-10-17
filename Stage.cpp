@@ -220,8 +220,8 @@ void Stage::Save()
 	 bytes = 0;
 	WriteFile(
 		hFile,              //ファイルハンドル
-		fileName,          //保存したい文字列
-		(DWORD)strlen(fileName),                  //保存する文字数
+		c_str(),          //保存したい文字列
+		,                  //保存する文字数
 		&bytes,             //保存したサイズ
 		NULL
 	);
