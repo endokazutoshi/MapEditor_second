@@ -39,6 +39,12 @@ class Stage : public GameObject
     int menuID_;
 
 
+    char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+    OPENFILENAME ofn;
+    BOOL selFile;
+    HANDLE hFile;
+    DWORD bytes;
+
 public:
     void SetBlock(int _x, int _z, BLOCKTYPE _type);
     void SetBlockHeight(int _x, int _z, int _height);
@@ -62,5 +68,6 @@ public:
 
     //セーブ
     void Save();
+    void Load();
     BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 };

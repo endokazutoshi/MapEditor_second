@@ -185,10 +185,10 @@ void Stage::Release()
 
 void Stage::Save()
 {
-	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+	
 
 	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	                        	//名前をつけて保存ダイアログの設定用構造体
 	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
 	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
 	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
@@ -199,12 +199,12 @@ void Stage::Save()
 	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
 
 	//「ファイルを保存」ダイアログ
-	BOOL selFile;
+
 	selFile = GetSaveFileName(&ofn);
 
 	//キャンセルしたら中断
 	if (selFile == FALSE) return;
-	HANDLE hFile;
+
 	hFile = CreateFile(
 		fileName,    //ファイル名
 		GENERIC_WRITE,  //アクセスモード
@@ -217,19 +217,37 @@ void Stage::Save()
 
 	std::string data = "";
 	//data.length()
-	DWORD bytes = 0;
+	 bytes = 0;
 	WriteFile(
 		hFile,              //ファイルハンドル
-		"ABCDEF",          //保存したい文字列
-		12,                  //保存する文字数
+		fileName,          //保存したい文字列
+		(DWORD)strlen(fileName),                  //保存する文字数
 		&bytes,             //保存したサイズ
 		NULL
 	);
 
 	CloseHandle(hFile);
+}
 
+void Stage::Load()
+{
+	//「ファイルを保存」ダイアログの設定
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+
+	//「ファイルを保存」ダイアログ
+	selFile = GetOpenFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
 	hFile = CreateFile(
-		L"dataFile.txt",                 //ファイル名
+		fileName,                 //ファイル名
 		GENERIC_READ,           //アクセスモード（読み込み）
 		0,                      //共有（なし）
 		NULL,                   //セキュリティ属性（継承しない）
@@ -241,19 +259,18 @@ void Stage::Save()
 	DWORD fileSize = GetFileSize(hFile, NULL);
 
 	//ファイルのサイズ分メモリを確保
-	char* data;
-	data = new char[fileSize];
+	char* fileData = new char[fileSize];
 
-	dwBytes = 0; //読み込み位置
+	bytes = 0; //読み込み位置
 
-	res = ReadFile(
+	ReadFile(
 		hFile,     //ファイルハンドル
-		data,      //データを入れる変数
+		fileData,      //データを入れる変数
 		fileSize,  //読み込むサイズ
-		&dwBytes,  //読み込んだサイズ
+		&bytes,  //読み込んだサイズ
 		NULL);     //オーバーラップド構造体（今回は使わない）
+	CloseHandle(hFile);
 }
-
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
