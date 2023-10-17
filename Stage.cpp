@@ -139,6 +139,10 @@ void Stage::Update()
 					{
 						SetBlock(x, z, (BLOCKTYPE)(select_));
 					}
+					if (radioB_ == IDC_RADIO_SELECTION)
+					{
+						table_[x][y].height++;
+					}
 					return;
 				}
 
@@ -214,14 +218,13 @@ void Stage::Save()
 		FILE_ATTRIBUTE_NORMAL,
 		NULL
 	);
-
 	std::string data = "";
 	//data.length()
 	 bytes = 0;
 	WriteFile(
 		hFile,              //ファイルハンドル
-		c_str(),          //保存したい文字列
-		,                  //保存する文字数
+		data.c_str(),          //保存したい文字列
+		selFile,                  //保存する文字数
 		&bytes,             //保存したサイズ
 		NULL
 	);
@@ -287,10 +290,12 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_SELECTION), BM_SETCHECK, BST_CHECKED, 0);
+		
 		return TRUE;
 
 
-		SendMessage(GetDlgItem(hDlg, ID_MENU_SAVE), BM_SETCHECK, BST_CHECKED, 0);
+	
 		
 	case WM_COMMAND:
 
@@ -302,5 +307,3 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 
 }
-
-

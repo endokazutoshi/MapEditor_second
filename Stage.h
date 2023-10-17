@@ -39,7 +39,7 @@ class Stage : public GameObject
     int menuID_;
 
 
-    char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+    char fileName[MAX_PATH] = "無題map.txt";  //ファイル名を入れる変数
     OPENFILENAME ofn;
     BOOL selFile;
     HANDLE hFile;
