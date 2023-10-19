@@ -101,9 +101,10 @@ void Stage::Update()
 	//④　③にinvVP、invPrj、invViewをかける
 	vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
 
-	for (int x = 0; x < 15; x++)
+	std::string data;
+	for (int x = 0; x < XSIZE; x++)
 	{
-		for (int z = 0; z < 15; z++)
+		for (int z = 0; z < ZSIZE; z++)
 		{
 			for (int y = 0; y < table_[x][z].height + 1; y++) // 一ブロックは敷きたいからheight + 1にしている
 			{
@@ -123,8 +124,9 @@ void Stage::Update()
 				// ここでレイ発射、クリックした部分だけになる
 				if (data.hit)
 				{
-					//ラジオボタンの選択
-					if (radioB_ == IDC_RADIO_UP)
+				 
+					
+				    if (radioB_ == IDC_RADIO_UP)
 					{
 						table_[x][z].height++;
 					}
@@ -159,9 +161,9 @@ void Stage::Draw()
 	//Model::SetTransform(hModel_, transform_);
 	//Model::Draw(hModel_);
 
-	for (int x = 0; x < 15; x++)
+	for (int x = 0; x < XSIZE; x++)
 	{
-		for (int z = 0; z < 15; z++)
+		for (int z = 0; z < ZSIZE; z++)
 		{
 			for (int y = 0; y < table_[x][z].height + 1; y++)
 			{
@@ -189,10 +191,10 @@ void Stage::Release()
 
 void Stage::Save()
 {
-	
+
 
 	//「ファイルを保存」ダイアログの設定
-	                        	//名前をつけて保存ダイアログの設定用構造体
+								//名前をつけて保存ダイアログの設定用構造体
 	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
 	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
 	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
@@ -216,22 +218,40 @@ void Stage::Save()
 		NULL,
 		CREATE_ALWAYS,     //作成方法
 		FILE_ATTRIBUTE_NORMAL,
-		NULL
-	);
-	std::string data = "";
-	//data.length()
-	 bytes = 0;
-	WriteFile(
-		hFile,              //ファイルハンドル
-		data.c_str(),          //保存したい文字列
-		selFile,                  //保存する文字数
-		&bytes,             //保存したサイズ
-		NULL
-	);
+		NULL);
+	std::string data;
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			if (x != XSIZE - 1)
+			{
+				data += table_[x][z].type + " ";
+				data += table_[x][z].height + " ";
+			}
+			else
+			{
+				data += table_[x][z].type + " ";
+				data += table_[x][z].height + "\n";
+			}
+		
+		}
+	}
 
-	CloseHandle(hFile);
+
+		//data.length()
+		bytes = 0;
+		WriteFile(
+			hFile,              //ファイルハンドル
+			data.c_str(),          //保存したい文字列
+			(DWORD)data.length(),                  //保存する文字数
+			&bytes,             //保存したサイズ
+			NULL
+		);
+
+		CloseHandle(hFile);
+	
 }
-
 void Stage::Load()
 {
 	//「ファイルを保存」ダイアログの設定
@@ -307,3 +327,4 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 
 }
+
