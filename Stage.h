@@ -40,10 +40,12 @@ class Stage : public GameObject
 
 
     char fileName[MAX_PATH] = "–³‘è.map";  //ƒtƒ@ƒCƒ‹–¼‚ğ“ü‚ê‚é•Ï”
+    BOOL res;
     OPENFILENAME ofn;
     BOOL selFile;
     HANDLE hFile;
     DWORD bytes;
+    std::string data;
 
 public:
     void SetBlock(int _x, int _z, BLOCKTYPE _type);
