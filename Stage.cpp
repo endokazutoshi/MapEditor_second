@@ -4,6 +4,7 @@
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
 #include "Engine/Fbx.h"
+#include <iostream>
 
 
 void Stage::SetBlock(int _x, int _z, BLOCKTYPE _type)
@@ -185,63 +186,110 @@ void Stage::Release()
 }
 
 
-void Stage::Save()
+
+	void Stage::Save()
 {
 
+	// ダイアログボックスの初期化
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.lpstrFilter = "テキストファイル (*.txt)\0*.txt\0すべてのファイル (*.*)\0*.*\0";
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_OVERWRITEPROMPT;
 
-	//「ファイルを保存」ダイアログの設定
-								//名前をつけて保存ダイアログの設定用構造体
-	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-	ofn.lpstrFile = fileName;               	//ファイル名
-	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
-
-	//「ファイルを保存」ダイアログ
-
-	selFile = GetSaveFileName(&ofn);
-
-	//キャンセルしたら中断
-	if (selFile == FALSE) return;
-
-	hFile = CreateFile(
-		fileName,    //ファイル名
-		GENERIC_WRITE,  //アクセスモード
-		0,
-		NULL,
-		CREATE_ALWAYS,     //作成方法
-		FILE_ATTRIBUTE_NORMAL,
-		NULL);
-	if (hFile != INVALID_HANDLE_VALUE)
+	// "ファイルを保存" ダイアログを表示
+	if (GetSaveFileName(&ofn) == TRUE)
 	{
-		std::wcout << L"ファイルオープンに失敗 " << GetLastError() << std::endl;
-		return ;
-	}
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int z = 0; z < ZSIZE; z++)
+		// ファイルが正常に選択された場合
+		HANDLE hFile = CreateFile(
+			fileName,
+			GENERIC_WRITE,
+			0,
+			NULL,
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+
+		if (hFile != INVALID_HANDLE_VALUE)
 		{
-			data += std::to_string(x) + " " + std::to_string(z) + " " + std::to_string(table_[x][z].type) + " " + std::to_string(table_[x][z].height) + "\n";
+			// ファイルにデータを書き込む
+			for (int x = 0; x < XSIZE; x++)
+			{
+				for (int z = 0; z < ZSIZE; z++)
+				{
+					data += 
+                           std::to_string(table_[x][z].type) + " "
+                          + std::to_string(table_[x][z].height) + "\n";
+				}
+			}
+			bytes = 0;
+			WriteFile(
+				hFile,
+				data.c_str(),
+				(DWORD)data.length(),
+				&bytes,
+				NULL);
 
+			CloseHandle(hFile);
 		}
 	}
-		//data.length()
-		bytes = 0;
-		res = WriteFile(
-			hFile,              //ファイルハンドル
-			data.c_str(),          //保存したい文字列
-			(DWORD)data.length(),                  //保存する文字数
-			&bytes,             //保存したサイズ
-			NULL
-		);
-
-		CloseHandle(hFile);
-
-	
 }
+//void Stage::Save()
+//{
+//	//「ファイルを保存」ダイアログの設定
+//								//名前をつけて保存ダイアログの設定用構造体
+//	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+//	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+//	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
+//		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+//	ofn.lpstrFile = fileName;               	//ファイル名
+//	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+//	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
+//	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+//
+//	//「ファイルを保存」ダイアログ
+//
+//	selFile = GetSaveFileName(&ofn);
+//
+//	//キャンセルしたら中断
+//	if (selFile == FALSE) return;
+//
+//	hFile = CreateFile(
+//		fileName,    //ファイル名
+//		GENERIC_WRITE,  //アクセスモード
+//		0,
+//		NULL,
+//		CREATE_ALWAYS,     //作成方法
+//		FILE_ATTRIBUTE_NORMAL,
+//		NULL);
+//	if (hFile != INVALID_HANDLE_VALUE)
+//	{
+//		std::wcout << L"ファイルオープンに失敗 " << GetLastError() << std::endl;
+//		return ;
+//	}
+//	for (int x = 0; x < XSIZE; x++)
+//	{
+//		for (int z = 0; z < ZSIZE; z++)  
+//		{
+//			data += std::to_string(x) + " "+ std::to_string(z) + " "+ std::to_string(table_[x][z].type) + " "+ std::to_string(table_[x][z].height) + "\n";
+//			
+//
+//		}
+//	}
+//		//data.length()
+//		bytes = 0;
+//		res = WriteFile(
+//			hFile,              //ファイルハンドル
+//			data.c_str(),          //保存したい文字列
+//			(DWORD)data.length(),                  //保存する文字数
+//			&bytes,             //保存したサイズ
+//			NULL
+//		);
+//
+//		CloseHandle(hFile);
+//}
+
 void Stage::Load()
 {
 
@@ -295,6 +343,8 @@ void Stage::Load()
 	}
 	CloseHandle(hFile);
 	delete[] fileData;
+
+
 }
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
@@ -357,7 +407,10 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 //			{
 //				for (int z = 0; z < ZSIZE; z++)
 //				{
-//					data += std::to_string(x) + " " + std::to_string(z) + " " + std::to_string(table_[x][z].type) + " " + std::to_string(table_[x][z].height) + "\n";
+//					data += std::to_string(x) + " "
+//                          + std::to_string(z) + " " 
+//                          + std::to_string(table_[x][z].type) + " "
+//                          + std::to_string(table_[x][z].height) + "\n";
 //				}
 //			}
 //
@@ -420,95 +473,95 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 //	}
 //}
 
-void Stage::Save()
-{
-	// Initialize the "Save File" dialog settings
-	OPENFILENAME ofn;
-	char fileName[MAX_PATH] = ""; // File name
-	std::string data; // Define the data variable
-
-	// Initialize the dialog settings
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.lpstrFilter = "Map Data Files (*.map)\0*.map\0All Files (*.*)\0*.*\0";
-	ofn.lpstrFile = fileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_OVERWRITEPROMPT;
-
-	// Show the "Save File" dialog
-	if (GetSaveFileName(&ofn) == TRUE)
-	{
-		// File has been selected, now let's create and write to the file
-		HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-		if (hFile != INVALID_HANDLE_VALUE)
-		{
-			for (int x = 0; x < XSIZE; x++)
-			{
-				for (int z = 0; z < ZSIZE; z++)
-				{
-					// Append the data to the string
-					data += std::to_string(x) + " " + std::to_string(z) + " " + std::to_string(static_cast<int>(table_[x][z].type)) + " " + std::to_string(table_[x][z].height) + "\n";
-				}
-			}
-
-			// Write the data to the file
-			DWORD bytesWritten;
-			if (WriteFile(hFile, data.c_str(), static_cast<DWORD>(data.length()), &bytesWritten, NULL) == FALSE)
-			{
-				// Handle any errors
-				std::wcout << L"Failed to write to the file: " << GetLastError() << std::endl;
-			}
-
-			CloseHandle(hFile);
-		}
-	}
-}
-
-void Stage::Load()
-{
-	// Initialize the "Open File" dialog settings
-	OPENFILENAME ofn;
-	char fileName[MAX_PATH] = "";
-
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.lpstrFilter = "Map Data Files (*.map)\0*.map\0All Files (*.*)\0*.*\0";
-	ofn.lpstrFile = fileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_FILEMUSTEXIST;
-
-	if (GetOpenFileName(&ofn) == TRUE)
-	{
-		// File has been selected, now let's read its content
-		HANDLE hFile = CreateFile(fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-		if (hFile != INVALID_HANDLE_VALUE)
-		{
-			DWORD fileSize = GetFileSize(hFile, NULL);
-			char* fileData = new char[fileSize];
-
-			DWORD bytesRead;
-			if (ReadFile(hFile, fileData, fileSize, &bytesRead, NULL) != FALSE)
-			{
-				// Parse the loaded data and update your stage data accordingly
-				std::string data(fileData, bytesRead);
-				 dataStream(data);
-
-				int x, z, type, height;
-				for (int i = 0; i < XSIZE; i++)
-				{
-					for (int j = 0; j < ZSIZE; j++)
-					{
-						dataStream >> x >> z >> type >> height;
-						table_[x][z].type = static_cast<BLOCKTYPE>(type);
-						table_[x][z].height = height;
-					}
-				}
-			}
-
-			CloseHandle(hFile);
-			delete[] fileData;
-		}
-	}
-}
+//void Stage::Save()
+//{
+//	// Initialize the "Save File" dialog settings
+//	OPENFILENAME ofn;
+//	char fileName[MAX_PATH] = ""; // File name
+//	std::string data; // Define the data variable
+//
+//	// Initialize the dialog settings
+//	ZeroMemory(&ofn, sizeof(ofn));
+//	ofn.lStructSize = sizeof(OPENFILENAME);
+//	ofn.lpstrFilter = "Map Data Files (*.map)\0*.map\0All Files (*.*)\0*.*\0";
+//	ofn.lpstrFile = fileName;
+//	ofn.nMaxFile = MAX_PATH;
+//	ofn.Flags = OFN_OVERWRITEPROMPT;
+//
+//	// Show the "Save File" dialog
+//	if (GetSaveFileName(&ofn) == TRUE)
+//	{
+//		// File has been selected, now let's create and write to the file
+//		HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+//
+//		if (hFile != INVALID_HANDLE_VALUE)
+//		{
+//			for (int x = 0; x < XSIZE; x++)
+//			{
+//				for (int z = 0; z < ZSIZE; z++)
+//				{
+//					// Append the data to the string
+//					data += std::to_string(x) + " " + std::to_string(z) + " " + std::to_string((int)(table_[x][z].type)) + " " + std::to_string(table_[x][z].height) + "\n";
+//				}
+//			}
+//
+//			// Write the data to the file
+//			DWORD bytesWritten;
+//			if (WriteFile(hFile,
+//				data.c_str(),
+//				static_cast<DWORD>(data.length()), &bytesWritten, NULL) == FALSE)
+//			{
+//				// Handle any errors
+//				std::wcout << L"Failed to write to the file: " << GetLastError() << std::endl;
+//			}
+//
+//			CloseHandle(hFile);
+//		}
+//	}
+//}
+//
+//void Stage::Load()
+//{
+//	// Initialize the "Open File" dialog settings
+//	OPENFILENAME ofn;
+//	char fileName[MAX_PATH] = "";
+//
+//	ZeroMemory(&ofn, sizeof(ofn));
+//	ofn.lStructSize = sizeof(OPENFILENAME);
+//	ofn.lpstrFilter = "Map Data Files (*.map)\0*.map\0All Files (*.*)\0*.*\0";
+//	ofn.lpstrFile = fileName;
+//	ofn.nMaxFile = MAX_PATH;
+//	ofn.Flags = OFN_FILEMUSTEXIST;
+//
+//	if (GetOpenFileName(&ofn) == TRUE)
+//	{
+//		// File has been selected, now let's read its content
+//		HANDLE hFile = CreateFile(fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+//
+//		if (hFile != INVALID_HANDLE_VALUE)
+//		{
+//			DWORD fileSize = GetFileSize(hFile, NULL);
+//			char* fileData = new char[fileSize];
+//
+//			DWORD bytesRead;
+//			if (ReadFile(hFile, fileData, fileSize, &bytesRead, NULL) != FALSE)
+//			{
+//				// Parse the loaded data and update your stage data accordingly
+//				std::string data(fileData, bytesRead);
+//
+//				int x, z, type, height;
+//				for (int i = 0; i < XSIZE; i++)
+//				{
+//					for (int j = 0; j < ZSIZE; j++)
+//					{
+//						table_[x][z].type = static_cast<BLOCKTYPE>(type);
+//						table_[x][z].height = height;
+//					}
+//				}
+//			}
+//
+//			CloseHandle(hFile);
+//			delete[] fileData;
+//		}
+//	}
+//}
