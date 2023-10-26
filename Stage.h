@@ -35,6 +35,7 @@ class Stage : public GameObject
 
     int mode_;      //0:上げる　1：下げる　2：種類を変える
     int select_;    //種類
+    int allSelect_;
 
     int radioB_;    //コントロールIDのやつー
     int menuID_;

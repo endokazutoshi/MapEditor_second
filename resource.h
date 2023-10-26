@@ -10,9 +10,12 @@
 #define IDC_RADIO_CHANGE                1015
 #define IDC_COMBO2                      1016
 #define IDC_COMBO1                      1016
-#define IDC_RADIO_SELECTION             1018
-#define IDC_RADIO1                      1019
 #define IDC_RADIO_RESET                 1019
+#define IDC_COMBO3                      1020
+#define IDC_RADIO_ALLSELECTION          1021
+#define IDC_RADIO_ALLUP                 1022
+#define IDC_RADIO2                      1023
+#define IDC_RADIO_ALLDOWN               1023
 #define ID_40001                        40001
 #define ID_40002                        40002
 #define ID_40003                        40003
@@ -27,7 +30,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        104
 #define _APS_NEXT_COMMAND_VALUE         40008
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

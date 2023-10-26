@@ -121,14 +121,13 @@ void Stage::Update()
 				Model::SetTransform(hModel_[0], trans);
 
 				Model::RayCast(hModel_[0], data);
+			
 
 				//if文が多いから少なくしたいな...
 				// ここでレイ発射、クリックした部分だけになる
 				if (data.hit)
 				{
-				 
-					
-				    if (radioB_ == IDC_RADIO_UP)
+					if (radioB_ == IDC_RADIO_UP)
 					{
 						table_[x][z].height++;
 					}
@@ -142,40 +141,49 @@ void Stage::Update()
 				     if (radioB_ == IDC_RADIO_CHANGE)
 					{
 						SetBlock(x, z, (BLOCKTYPE)(select_));
-					}
-					 if (radioB_ == IDC_RADIO_SELECTION)//リセットボタン
-					 {
-						 // Iterate through the stage and set all blocks of a certain type to be selected
-						 for (int x = 0; x < XSIZE; x++)
-						 {
-							 for (int z = 0; z < ZSIZE; z++)
-							 {
-								 if (table_[x][z].type == selectedType_)
-								 {
-									 // Set the selected state for this block
-									 table_[x][z].selected = true;
-								 }
-							 }
-						 }
-					
-					
-					 }
-					 if (radioB_ == IDC_RADIO_RESET)
+					}	
+					 if (radioB_ == IDC_RADIO_RESET)//ワンクリックでリセット
 					 {
 						 for (int x = 0; x < XSIZE; x++)
 						 {
 							 for (int z = 0; z < ZSIZE; z++)
 							 {
-								 SetBlock(x, z, DEFAULT);//ブロックのタイプも全て0にする
+								 SetBlock(x,z, DEFAULT);//ブロックのタイプも全て0にする
 								 SetBlockHeight(x, z, 0);//高さも全て0
 							 }
 						 }
 
 					 }
-					 return;
 				
-
-					return;
+					 if (radioB_ == IDC_RADIO_ALLUP)
+					 {
+						 for (int x = 0; x < XSIZE; x++) {
+							 for (int z = 0; z < ZSIZE; z++) {
+								 table_[x][z].height++;
+							 }
+						 }
+					 }
+					 if (radioB_ == IDC_RADIO_ALLDOWN)
+					 {
+						 for (int x = 0; x < XSIZE; x++) {
+							 for (int z = 0; z < ZSIZE; z++) {
+								 if(table_[x][z].height >= 1)
+								 table_[x][z].height--;
+							 }
+						 }
+					 }
+					 if (radioB_ == IDC_RADIO_ALLSELECTION)
+					 {
+						 for (int x = 0; x < XSIZE; x++)
+						 {
+							 for (int z = 0; z < ZSIZE; z++)
+							 {
+                                SetBlock(x, z, (BLOCKTYPE)(allSelect_));
+							 }
+						 }
+						 
+					 }
+					 return;
 				}
 			
 
@@ -353,15 +361,24 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		//ラジオボタンの初期値
 		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
 		//コンボボックスの初期値
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"レンガ");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"草原");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)"レンガ");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)"草原");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)"砂地");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)"水");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 
-		SendMessage(GetDlgItem(hDlg, IDC_RADIO_SELECTION), BM_SETCHECK, BST_CHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_ALLSELECTION), BM_SETCHECK, BST_CHECKED, 0);
 		SendMessage(GetDlgItem(hDlg, IDC_RADIO_RESET), BM_SETCHECK, BST_CHECKED, NULL);
+
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_ALLUP), BM_SETCHECK, BST_CHECKED, NULL);
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"レンガ");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"草原");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"砂地");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"水");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_GETCURSEL, 0, 0);
+
 		
 		return TRUE;
 
@@ -371,12 +388,12 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_COMMAND:
 
 		radioB_ = LOWORD(wp);
-	    select_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+	    select_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
+		allSelect_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_GETCURSEL, 0, 0);
 
 	}
 	return FALSE;
 
 
 }
-
 
