@@ -183,6 +183,26 @@ void Stage::Update()
 						 }
 						 
 					 }
+					 if (radioB_ == IDC_RADIO_RANDOMTERRAIN)//ランダム生成
+					 {
+						 for (int z = 0; z < ZSIZE; z++) 
+						 {
+							 for (int x = 0; x < XSIZE; x++) 
+							 {
+								 SetBlockHeight(x, z, rand() % 4);
+							 }
+						 }
+					 }
+					 if (radioB_ == IDC_RADIO_RONDOMCOLLAR)
+					 {
+						 for (int z = 0; z < ZSIZE; z++)
+						 {
+							 for (int x = 0; x < XSIZE; x++)
+							 {
+								 SetBlock(x, z, (BLOCKTYPE)(rand() % 5));
+							 }
+						 }
+					 }
 					 return;
 				}
 			
@@ -281,7 +301,6 @@ void Stage::Save()
 
 void Stage::Load()
 {
-	// Configure the "Open File" dialog
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.lpstrFilter = TEXT("テキストファイル (*.txt)\0*.txt\0すべてのファイル (*.*)\0*.*\0");
@@ -289,14 +308,11 @@ void Stage::Load()
 	ofn.nMaxFile = MAX_PATH;
 	ofn.Flags = OFN_FILEMUSTEXIST;
 
-	// Display the "Open File" dialog
 	selFile = GetOpenFileName(&ofn);
 
-	// Check if the user canceled the dialog
 	if (selFile == FALSE)
 		return;
 
-	// Open the selected file for reading
 	hFile = CreateFile(
 		fileName,
 		GENERIC_READ,
@@ -308,19 +324,17 @@ void Stage::Load()
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		// Handle file open error, if needed
 		std::wcout << L"ファイルオープンに失敗 " << GetLastError() << std::endl;
 		return;
 	}
 
-	// Get the file size
 	DWORD fileSize = GetFileSize(hFile, NULL);
 
-	// Allocate memory to read the file content
+
 	char* fileData = new char[fileSize];
 
-	// Read the file content into the allocated memory
-	bytes = 0; // Reset the read position
+	
+	bytes = 0; 
 	res = ReadFile(
 		hFile,
 		fileData,
@@ -330,24 +344,15 @@ void Stage::Load()
 
 	if (res == FALSE)
 	{
-		// Handle read error, if needed
 		std::wcout << L"ファイル読み込みに失敗" << GetLastError() << std::endl;
 		CloseHandle(hFile);
 		delete[] fileData;
 		return;
 	}
 
-	// Close the file
 	CloseHandle(hFile);
-
-	// Now, you have the file data in the 'fileData' variable
-	// You need to parse and process it to update your stage data
-	// For example, you can split the data by newline and process it line by line
 	std::string fileContent(fileData, fileSize);
 
-	// Parse and update the stage data here
-
-	// Clean up allocated memory
 	delete[] fileData;
 }
 
@@ -368,9 +373,6 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO1), CB_GETCURSEL, 0, 0);
 
-		SendMessage(GetDlgItem(hDlg, IDC_RADIO_ALLSELECTION), BM_SETCHECK, BST_CHECKED, 0);
-		SendMessage(GetDlgItem(hDlg, IDC_RADIO_RESET), BM_SETCHECK, BST_CHECKED, NULL);
-
 		SendMessage(GetDlgItem(hDlg, IDC_RADIO_ALLUP), BM_SETCHECK, BST_CHECKED, NULL);
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"レンガ");
@@ -379,12 +381,8 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO3), CB_GETCURSEL, 0, 0);
 
-		
 		return TRUE;
 
-
-	
-		
 	case WM_COMMAND:
 
 		radioB_ = LOWORD(wp);
@@ -396,4 +394,3 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 
 }
-
