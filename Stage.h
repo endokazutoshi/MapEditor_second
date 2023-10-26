@@ -1,3 +1,4 @@
+//Stage.h
 #pragma once
 #include "Engine/GameObject.h"
 #include "windows.h"
@@ -45,7 +46,6 @@ class Stage : public GameObject
     BOOL selFile;
     HANDLE hFile;
     DWORD bytes;
-    std::string data;
 
 public:
     void SetBlock(int _x, int _z, BLOCKTYPE _type);

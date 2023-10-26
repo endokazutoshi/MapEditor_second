@@ -1,3 +1,4 @@
+//Stage.cpp
 #include "Stage.h"
 #include "resource.h"
 #include "Engine/Model.h"
@@ -132,18 +133,51 @@ void Stage::Update()
 						table_[x][z].height++;
 					}
 					//ラジオボタンの選択
-					else if (radioB_ == IDC_RADIO_DOWN)
+				    if (radioB_ == IDC_RADIO_DOWN)
 					{
 						if (table_[x][z].height >= 1)//テーブルの高さが１つより上だったら...
 							table_[x][z].height--;
 					}
 					//ラジオボタンの選択
-					else if (radioB_ == IDC_RADIO_CHANGE)
+				     if (radioB_ == IDC_RADIO_CHANGE)
 					{
 						SetBlock(x, z, (BLOCKTYPE)(select_));
 					}
+					 if (radioB_ == IDC_RADIO_SELECTION)//リセットボタン
+					 {
+						 // Iterate through the stage and set all blocks of a certain type to be selected
+						 for (int x = 0; x < XSIZE; x++)
+						 {
+							 for (int z = 0; z < ZSIZE; z++)
+							 {
+								 if (table_[x][z].type == selectedType_)
+								 {
+									 // Set the selected state for this block
+									 table_[x][z].selected = true;
+								 }
+							 }
+						 }
+					
+					
+					 }
+					 if (radioB_ == IDC_RADIO_RESET)
+					 {
+						 for (int x = 0; x < XSIZE; x++)
+						 {
+							 for (int z = 0; z < ZSIZE; z++)
+							 {
+								 SetBlock(x, z, DEFAULT);//ブロックのタイプも全て0にする
+								 SetBlockHeight(x, z, 0);//高さも全て0
+							 }
+						 }
+
+					 }
+					 return;
+				
+
 					return;
 				}
+			
 
 			}
 		}
@@ -187,7 +221,7 @@ void Stage::Release()
 
 
 
-	void Stage::Save()
+void Stage::Save()
 {
 
 	// ダイアログボックスの初期化
@@ -210,6 +244,8 @@ void Stage::Release()
 			CREATE_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,
 			NULL);
+		
+		std::string data;
 
 		if (hFile != INVALID_HANDLE_VALUE)
 		{
@@ -218,8 +254,7 @@ void Stage::Release()
 			{
 				for (int z = 0; z < ZSIZE; z++)
 				{
-					data += 
-                           std::to_string(table_[x][z].type) + " "
+					data += std::to_string(table_[x][z].type) + " "
                           + std::to_string(table_[x][z].height) + "\n";
 				}
 			}
@@ -235,117 +270,79 @@ void Stage::Release()
 		}
 	}
 }
-//void Stage::Save()
-//{
-//	//「ファイルを保存」ダイアログの設定
-//								//名前をつけて保存ダイアログの設定用構造体
-//	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-//	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-//	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-//		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-//	ofn.lpstrFile = fileName;               	//ファイル名
-//	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-//	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
-//	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
-//
-//	//「ファイルを保存」ダイアログ
-//
-//	selFile = GetSaveFileName(&ofn);
-//
-//	//キャンセルしたら中断
-//	if (selFile == FALSE) return;
-//
-//	hFile = CreateFile(
-//		fileName,    //ファイル名
-//		GENERIC_WRITE,  //アクセスモード
-//		0,
-//		NULL,
-//		CREATE_ALWAYS,     //作成方法
-//		FILE_ATTRIBUTE_NORMAL,
-//		NULL);
-//	if (hFile != INVALID_HANDLE_VALUE)
-//	{
-//		std::wcout << L"ファイルオープンに失敗 " << GetLastError() << std::endl;
-//		return ;
-//	}
-//	for (int x = 0; x < XSIZE; x++)
-//	{
-//		for (int z = 0; z < ZSIZE; z++)  
-//		{
-//			data += std::to_string(x) + " "+ std::to_string(z) + " "+ std::to_string(table_[x][z].type) + " "+ std::to_string(table_[x][z].height) + "\n";
-//			
-//
-//		}
-//	}
-//		//data.length()
-//		bytes = 0;
-//		res = WriteFile(
-//			hFile,              //ファイルハンドル
-//			data.c_str(),          //保存したい文字列
-//			(DWORD)data.length(),                  //保存する文字数
-//			&bytes,             //保存したサイズ
-//			NULL
-//		);
-//
-//		CloseHandle(hFile);
-//}
 
 void Stage::Load()
 {
+	// Configure the "Open File" dialog
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.lpstrFilter = TEXT("テキストファイル (*.txt)\0*.txt\0すべてのファイル (*.*)\0*.*\0");
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_FILEMUSTEXIST;
 
-	//「ファイルを保存」ダイアログの設定
-	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")        //─┬ファイルの種類
-		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-	ofn.lpstrFile = fileName;               	//ファイル名
-	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
-	//ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
-
-	//「ファイルを保存」ダイアログ
+	// Display the "Open File" dialog
 	selFile = GetOpenFileName(&ofn);
 
-	//キャンセルしたら中断
-	if (selFile == FALSE) return;
+	// Check if the user canceled the dialog
+	if (selFile == FALSE)
+		return;
+
+	// Open the selected file for reading
 	hFile = CreateFile(
-		fileName,                 //ファイル名
-		GENERIC_READ,           //アクセスモード（読み込み）
-		0,                      //共有（なし）
-		NULL,                   //セキュリティ属性（継承しない）
-		OPEN_EXISTING,           //作成方法
-		FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
-		NULL);                  //拡張属性（なし）
-	
-	if (hFile != INVALID_HANDLE_VALUE)
+		fileName,
+		GENERIC_READ,
+		0,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE)
 	{
+		// Handle file open error, if needed
 		std::wcout << L"ファイルオープンに失敗 " << GetLastError() << std::endl;
 		return;
 	}
 
-	//ファイルのサイズを取得
+	// Get the file size
 	DWORD fileSize = GetFileSize(hFile, NULL);
 
-	//ファイルのサイズ分メモリを確保
+	// Allocate memory to read the file content
 	char* fileData = new char[fileSize];
 
-	bytes = 0; //読み込み位置
-
+	// Read the file content into the allocated memory
+	bytes = 0; // Reset the read position
 	res = ReadFile(
-		hFile,     //ファイルハンドル
-		fileData,      //データを入れる変数
-		fileSize,  //読み込むサイズ
-		&bytes,  //読み込んだサイズ
-		NULL);     //オーバーラップド構造体（今回は使わない）s
+		hFile,
+		fileData,
+		(DWORD)fileSize,
+		&bytes,
+		NULL);
+
 	if (res == FALSE)
 	{
-		std::wcout << L"オープンに失敗”" << GetLastError() << std::endl;
+		// Handle read error, if needed
+		std::wcout << L"ファイル読み込みに失敗" << GetLastError() << std::endl;
+		CloseHandle(hFile);
+		delete[] fileData;
+		return;
 	}
+
+	// Close the file
 	CloseHandle(hFile);
+
+	// Now, you have the file data in the 'fileData' variable
+	// You need to parse and process it to update your stage data
+	// For example, you can split the data by newline and process it line by line
+	std::string fileContent(fileData, fileSize);
+
+	// Parse and update the stage data here
+
+	// Clean up allocated memory
 	delete[] fileData;
-
-
 }
+
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -362,6 +359,9 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_SELECTION), BM_SETCHECK, BST_CHECKED, 0);
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_RESET), BM_SETCHECK, BST_CHECKED, NULL);
 		
 		return TRUE;
 
@@ -378,190 +378,5 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 
 }
-//
-//void Stage::Save()
-//{
-//	// "ファイルを保存" ダイアログの設定
-//	OPENFILENAME ofn;
-//	char fileName[MAX_PATH] = ""; // ファイル名
-//
-//	// ダイアログボックスの初期化
-//	ZeroMemory(&ofn, sizeof(ofn));
-//	ofn.lStructSize = sizeof(OPENFILENAME);
-//	ofn.lpstrFilter = "テキストファイル (*.txt)\0*.txt\0すべてのファイル (*.*)\0*.*\0";
-//	ofn.lpstrFile = fileName;
-//	ofn.nMaxFile = MAX_PATH;
-//	ofn.Flags = OFN_OVERWRITEPROMPT;
-//
-//	// "ファイルを保存" ダイアログを表示
-//	if (GetSaveFileName(&ofn) == TRUE)
-//	{
-//		// ファイルが正常に選択された場合
-//		HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-//
-//		if (hFile != INVALID_HANDLE_VALUE)
-//		{
-//			// ファイルにデータを書き込む
-//			std::string data;
-//			for (int x = 0; x < XSIZE; x++)
-//			{
-//				for (int z = 0; z < ZSIZE; z++)
-//				{
-//					data += std::to_string(x) + " "
-//                          + std::to_string(z) + " " 
-//                          + std::to_string(table_[x][z].type) + " "
-//                          + std::to_string(table_[x][z].height) + "\n";
-//				}
-//			}
-//
-//			DWORD bytesWritten;
-//			WriteFile(hFile, data.c_str(), static_cast<DWORD>(data.length()), &bytesWritten, NULL);
-//
-//			CloseHandle(hFile);
-//		}
-//	}
-//}
 
-//void Stage::Load()
-//{
-//	OPENFILENAME ofn;
-//	char fileName[MAX_PATH] = ""; // File name
-//
-//	// Initialize the dialog box
-//	ZeroMemory(&ofn, sizeof(ofn));
-//	ofn.lStructSize = sizeof(OPENFILENAME);
-//	ofn.lpstrFilter = "Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
-//	ofn.lpstrFile = fileName;
-//	ofn.nMaxFile = MAX_PATH;
-//	ofn.Flags = OFN_FILEMUSTEXIST;
-//
-//	// Show the "Open File" dialog
-//	if (GetOpenFileName(&ofn) == TRUE)
-//	{
-//		// File has been selected, now let's read its content
-//		HANDLE hFile = CreateFile(fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-//
-//		if (hFile != INVALID_HANDLE_VALUE)
-//		{
-//			DWORD fileSize = GetFileSize(hFile, NULL);
-//			char* fileData = new char[fileSize];
-//
-//			// Read the content of the file
-//			DWORD bytesRead;
-//			if (ReadFile(hFile, fileData, fileSize, &bytesRead, NULL) != FALSE)
-//			{
-//				// File content is now in fileData, you can parse and use it
-//				std::string data(fileData, bytesRead);
-//				std::istringstream dataStream(data);
-//				int x, z, type, height;
-//
-//				// Parse the loaded data and update your stage data accordingly
-//				for (int i = 0; i < XSIZE; i++)
-//				{
-//					for (int j = 0; j < ZSIZE; j++)
-//					{
-//						dataStream >> x >> z >> type >> height;
-//						table_[x][z].type = static_cast<BLOCKTYPE>(type);
-//						table_[x][z].height = height;
-//					}
-//				}
-//			}
-//
-//			CloseHandle(hFile);
-//			delete[] fileData; // Free the memory used to store the file content
-//		}
-//	}
-//}
 
-//void Stage::Save()
-//{
-//	// Initialize the "Save File" dialog settings
-//	OPENFILENAME ofn;
-//	char fileName[MAX_PATH] = ""; // File name
-//	std::string data; // Define the data variable
-//
-//	// Initialize the dialog settings
-//	ZeroMemory(&ofn, sizeof(ofn));
-//	ofn.lStructSize = sizeof(OPENFILENAME);
-//	ofn.lpstrFilter = "Map Data Files (*.map)\0*.map\0All Files (*.*)\0*.*\0";
-//	ofn.lpstrFile = fileName;
-//	ofn.nMaxFile = MAX_PATH;
-//	ofn.Flags = OFN_OVERWRITEPROMPT;
-//
-//	// Show the "Save File" dialog
-//	if (GetSaveFileName(&ofn) == TRUE)
-//	{
-//		// File has been selected, now let's create and write to the file
-//		HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-//
-//		if (hFile != INVALID_HANDLE_VALUE)
-//		{
-//			for (int x = 0; x < XSIZE; x++)
-//			{
-//				for (int z = 0; z < ZSIZE; z++)
-//				{
-//					// Append the data to the string
-//					data += std::to_string(x) + " " + std::to_string(z) + " " + std::to_string((int)(table_[x][z].type)) + " " + std::to_string(table_[x][z].height) + "\n";
-//				}
-//			}
-//
-//			// Write the data to the file
-//			DWORD bytesWritten;
-//			if (WriteFile(hFile,
-//				data.c_str(),
-//				static_cast<DWORD>(data.length()), &bytesWritten, NULL) == FALSE)
-//			{
-//				// Handle any errors
-//				std::wcout << L"Failed to write to the file: " << GetLastError() << std::endl;
-//			}
-//
-//			CloseHandle(hFile);
-//		}
-//	}
-//}
-//
-//void Stage::Load()
-//{
-//	// Initialize the "Open File" dialog settings
-//	OPENFILENAME ofn;
-//	char fileName[MAX_PATH] = "";
-//
-//	ZeroMemory(&ofn, sizeof(ofn));
-//	ofn.lStructSize = sizeof(OPENFILENAME);
-//	ofn.lpstrFilter = "Map Data Files (*.map)\0*.map\0All Files (*.*)\0*.*\0";
-//	ofn.lpstrFile = fileName;
-//	ofn.nMaxFile = MAX_PATH;
-//	ofn.Flags = OFN_FILEMUSTEXIST;
-//
-//	if (GetOpenFileName(&ofn) == TRUE)
-//	{
-//		// File has been selected, now let's read its content
-//		HANDLE hFile = CreateFile(fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-//
-//		if (hFile != INVALID_HANDLE_VALUE)
-//		{
-//			DWORD fileSize = GetFileSize(hFile, NULL);
-//			char* fileData = new char[fileSize];
-//
-//			DWORD bytesRead;
-//			if (ReadFile(hFile, fileData, fileSize, &bytesRead, NULL) != FALSE)
-//			{
-//				// Parse the loaded data and update your stage data accordingly
-//				std::string data(fileData, bytesRead);
-//
-//				int x, z, type, height;
-//				for (int i = 0; i < XSIZE; i++)
-//				{
-//					for (int j = 0; j < ZSIZE; j++)
-//					{
-//						table_[x][z].type = static_cast<BLOCKTYPE>(type);
-//						table_[x][z].height = height;
-//					}
-//				}
-//			}
-//
-//			CloseHandle(hFile);
-//			delete[] fileData;
-//		}
-//	}
-//}
