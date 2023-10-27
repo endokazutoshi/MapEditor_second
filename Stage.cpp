@@ -354,18 +354,6 @@ void Stage::Load()
 		return;
 	}
 
-	//// ファイルにデータを書き込む
-	//for (int x = 0; x < XSIZE; x++)
-	//{
-	//	for (int z = 0; z < ZSIZE; z++)
-	//	{
-	//		int a = static_cast<int>(fileData);
-	//		table_[x][z].type = static_cast<int>(fileData)/**/;
-	//		table_[x][z].height = static_cast<int>(fileDat)/**/;
-
-	//	}
-	//}
-	// ファイルにデータを書き込む
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int z = 0; z < ZSIZE; z++)
@@ -376,13 +364,10 @@ void Stage::Load()
 				table_[x][z].type = type;
 				table_[x][z].height = height;
 			}
-			else
-			{
-				// データ読み取りエラー処理
-				// エラーが発生した場合に適切な対処を行ってください。
-			}
+
 			// 次のデータに進む
 			fileData = strchr(fileData, '\n');
+
 			if (fileData != nullptr)
 				++fileData; // 改行文字をスキップ
 		}
