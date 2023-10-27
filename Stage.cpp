@@ -6,6 +6,7 @@
 #include "Engine/Camera.h"
 #include "Engine/Fbx.h"
 #include <iostream>
+#include <sstream>
 
 
 void Stage::SetBlock(int _x, int _z, BLOCKTYPE _type)
@@ -277,15 +278,22 @@ void Stage::Save()
 
 		if (hFile != INVALID_HANDLE_VALUE)
 		{
+
 			// ファイルにデータを書き込む
 			for (int x = 0; x < XSIZE; x++)
 			{
 				for (int z = 0; z < ZSIZE; z++)
 				{
-					data += std::to_string(table_[x][z].type) + " "
-                          + std::to_string(table_[x][z].height) + "\n";
+					std::stringstream typeStream;
+					typeStream << table_[x][z].type;
+
+					std::stringstream heightStream;
+					heightStream << table_[x][z].height;
+
+					data += typeStream.str() + " " + heightStream.str() + "\n";
 				}
 			}
+
 			bytes = 0;
 			WriteFile(
 				hFile,
@@ -329,10 +337,7 @@ void Stage::Load()
 	}
 
 	DWORD fileSize = GetFileSize(hFile, NULL);
-
-
 	char* fileData = new char[fileSize];
-
 	
 	bytes = 0; 
 	res = ReadFile(
@@ -346,14 +351,45 @@ void Stage::Load()
 	{
 		std::wcout << L"ファイル読み込みに失敗" << GetLastError() << std::endl;
 		CloseHandle(hFile);
-		delete[] fileData;
 		return;
+	}
+
+	//// ファイルにデータを書き込む
+	//for (int x = 0; x < XSIZE; x++)
+	//{
+	//	for (int z = 0; z < ZSIZE; z++)
+	//	{
+	//		int a = static_cast<int>(fileData);
+	//		table_[x][z].type = static_cast<int>(fileData)/**/;
+	//		table_[x][z].height = static_cast<int>(fileDat)/**/;
+
+	//	}
+	//}
+	// ファイルにデータを書き込む
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			int type, height;
+			if (sscanf_s(fileData, "%d %d", &type, &height) == 2)
+			{
+				table_[x][z].type = type;
+				table_[x][z].height = height;
+			}
+			else
+			{
+				// データ読み取りエラー処理
+				// エラーが発生した場合に適切な対処を行ってください。
+			}
+			// 次のデータに進む
+			fileData = strchr(fileData, '\n');
+			if (fileData != nullptr)
+				++fileData; // 改行文字をスキップ
+		}
 	}
 
 	CloseHandle(hFile);
 	std::string fileContent(fileData, fileSize);
-
-	delete[] fileData;
 }
 
 
