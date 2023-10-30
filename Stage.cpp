@@ -359,14 +359,14 @@ void Stage::Load()
 		for (int z = 0; z < ZSIZE; z++)
 		{
 			int type, height;
-			if (sscanf_s(fileData, "%d %d", &type, &height) == 2)
+			if (sscanf_s(fileData, "%d %d", &type, &height) == 2)//sscanf_sで文字列内の指定しに対応するデータを格納する
 			{
 				table_[x][z].type = type;
 				table_[x][z].height = height;
 			}
 
 			// 次のデータに進む
-			fileData = strchr(fileData, '\n');
+			fileData = strchr(fileData, '\n');//指定された文字が文字列内で最初に出現するかどうかを見つけるるる
 
 			if (fileData != nullptr)
 				++fileData; // 改行文字をスキップ
@@ -415,3 +415,4 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 
 }
+
