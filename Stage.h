@@ -4,6 +4,7 @@
 #include "windows.h"
 #include <iostream>
 #include <string>
+#include <sstream>
 
 namespace {
     const int MODEL_NUM{ 5 };
@@ -40,10 +41,11 @@ class Stage : public GameObject
     int radioB_;    //コントロールIDのやつー
     int menuID_;
 
+    //setlocale(LC_ALL, "Japanese");
 
-    char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+    char fileName[MAX_PATH] = "";  //ファイル名を入れる変数
     BOOL res;
-    OPENFILENAME ofn;
+    
     BOOL selFile;
     HANDLE hFile;
     DWORD bytes;

@@ -254,6 +254,7 @@ void Stage::Save()
 {
 
 	// ダイアログボックスの初期化
+	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.lpstrFilter = "テキストファイル (*.txt)\0*.txt\0すべてのファイル (*.*)\0*.*\0";
@@ -309,6 +310,7 @@ void Stage::Save()
 
 void Stage::Load()
 {
+	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.lpstrFilter = TEXT("テキストファイル (*.txt)\0*.txt\0すべてのファイル (*.*)\0*.*\0");
